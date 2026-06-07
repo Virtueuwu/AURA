@@ -30,6 +30,12 @@ export default function LoginForm() {
             <p>Sign in to continue scanning</p>
           </div>
 
+          {(!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes("placeholder")) && (
+            <div className="auth-alert error" style={{ border: "1px dashed #eb5e28", background: "rgba(235, 94, 40, 0.1)", color: "#eb5e28" }}>
+              <span>⚠️</span> <strong>Missing Vercel Settings:</strong> Your Supabase Environment Variables are not configured. Please add them in the Vercel Settings panel.
+            </div>
+          )}
+
           {message && (
             <div className="auth-alert success">
               <span>✅</span> {message}

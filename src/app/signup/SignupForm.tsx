@@ -29,6 +29,12 @@ export default function SignupForm() {
             <p>Start scanning and pricing items instantly</p>
           </div>
 
+          {(!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes("placeholder")) && (
+            <div className="auth-alert error" style={{ border: "1px dashed #eb5e28", background: "rgba(235, 94, 40, 0.1)", color: "#eb5e28" }}>
+              <span>⚠️</span> <strong>Missing Vercel Settings:</strong> Your Supabase Environment Variables are not configured. Please add them in the Vercel Settings panel.
+            </div>
+          )}
+
           {error && (
             <div className="auth-alert error">
               <span>⚠️</span> {error}

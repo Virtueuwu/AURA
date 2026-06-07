@@ -1139,6 +1139,16 @@ export default function AURAApp() {
           </div>
         </header>
 
+        {/* Supabase Missing Configuration Banner */}
+        {(!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes("placeholder")) && (
+          <div className="auth-alert error" style={{ margin: "10px 0 20px 0", border: "1px dashed #eb5e28", background: "rgba(235, 94, 40, 0.1)", color: "#eb5e28", boxShadow: "0 0 10px rgba(235, 94, 40, 0.1)", display: "flex", alignItems: "center", gap: "10px", padding: "12px", borderRadius: "8px" }}>
+            <span style={{ fontSize: "1.2rem" }}>⚠️</span>
+            <div>
+              <strong>Missing Vercel Settings:</strong> Your Supabase Environment Variables are not configured. Go to <strong>Vercel Dashboard &gt; Project Settings &gt; Environment Variables</strong> and add <code>NEXT_PUBLIC_SUPABASE_URL</code> and <code>NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY</code>.
+            </div>
+          </div>
+        )}
+
         {/* Gemini AI Settings Panel */}
         <div className="gemini-settings-panel glass" style={{ marginBottom: "20px", padding: "12px 16px" }}>
           <div className="settings-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }} onClick={() => setShowApiKeyInput(p => !p)}>
