@@ -1639,6 +1639,9 @@ export default function AURAApp() {
         {/* Footer */}
         <footer className="app-footer">
           <p>AURA AI Price Scanner &bull; Processing is 100% Local & Private</p>
+          <p style={{ marginTop: "4px", fontSize: "0.75rem", opacity: 0.6, letterSpacing: "0.05em" }}>
+            PS: I LOVE YOU Zilfa 🤍
+          </p>
         </footer>
       </div>
 
