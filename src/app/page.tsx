@@ -255,7 +255,21 @@ export default function AURAApp() {
   }, []);
 
   // Fetch log history from Supabase (fallback to localStorage)
+  const isSupabaseConfigured = Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    !process.env.NEXT_PUBLIC_SUPABASE_URL.includes("placeholder")
+  );
+
   const fetchHistory = useCallback(async () => {
+    // Skip network request if Supabase is not configured — use localStorage only
+    if (!isSupabaseConfigured) {
+      const localData = localStorage.getItem("aura-scan-history");
+      if (localData) {
+        try { setHistory(JSON.parse(localData)); } catch { /* ignore */ }
+      }
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from("todos")
@@ -332,29 +346,34 @@ export default function AURAApp() {
     if (savedKey) setGeminiApiKey(savedKey);
 
     // Auth: check current session and subscribe to auth changes
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) {
-        router.replace("/login");
-      } else {
-        setUser(data.user);
-      }
-    });
+    // Only runs when Supabase is properly configured
+    let subscription: { unsubscribe: () => void } = { unsubscribe: () => {} };
+    if (isSupabaseConfigured) {
+      supabase.auth.getUser().then(({ data }) => {
+        if (!data.user) {
+          router.replace("/login");
+        } else {
+          setUser(data.user);
+        }
+      });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) {
-        router.replace("/login");
-        setUser(null);
-      } else {
-        setUser(session.user);
-      }
-    });
+      const { data: { subscription: sub } } = supabase.auth.onAuthStateChange((_event, session) => {
+        if (!session) {
+          router.replace("/login");
+          setUser(null);
+        } else {
+          setUser(session.user);
+        }
+      });
+      subscription = sub;
+    }
 
     return () => {
       clearInterval(interval);
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
       subscription.unsubscribe();
     };
-  }, [showToast, fetchHistory, supabase, router]);
+  }, [showToast, fetchHistory, supabase, router, isSupabaseConfigured]);
 
   // Gemini Vision API call
   const callGeminiVision = useCallback(async (imageSrc: string): Promise<GeminiResult | null> => {
